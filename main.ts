@@ -8,9 +8,11 @@ import { Repository } from './src/repository';
 const filePath = path.resolve(__dirname, 'resources', 'naming_cmo.xlsx');
 
 (async function main(path: string) {
-  const data: Naming[] = await Parser.read(path, 1);
-  const struct: Map<string, Naming[]> = await Struct.parse(data);
+  for (let i = 0; i < 19; i++) {
+    const data: Naming[] = await Parser.read(path, i);
+    const struct: Map<string, Naming[]> = Struct.parse(data);
 
-  const repo = new Repository();
-  await repo.write(struct);
+    await Repository.write(struct);
+    console.log(`Successfully parsed page #${i + 1}`);
+  }
 })(filePath);

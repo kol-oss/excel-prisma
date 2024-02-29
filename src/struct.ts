@@ -1,15 +1,20 @@
 import { Naming } from './types/naming';
 
 export class Struct {
+  private static formMapKey(topic: string, language: string) {
+    return `${topic}-${language}`;
+  }
   static parse(data: Naming[]): Map<string, Naming[]> {
     const map = new Map<string, Naming[]>();
 
     for (const item of data) {
-      const { text } = item;
+      const { text, language } = item;
       if (!text) continue;
+      if (item.value === 'null') item.value = null;
 
-      if (map.has(text)) {
-        map.get(text)?.push(item);
+      const key = this.formMapKey(text, language);
+      if (map.has(key)) {
+        map.get(key)?.push(item);
       } else {
         const highPage = {
           page: item.page,
@@ -19,7 +24,7 @@ export class Struct {
           value: null,
         };
 
-        map.set(text, [highPage, item]);
+        map.set(key, [highPage, item]);
       }
     }
     return map;
