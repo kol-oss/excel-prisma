@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  username            String?
+  avatar              String?
+  password            String?
+  lastPasswordChanged DateTime  @default(now())
+  createdAt           DateTime? @default(now()) @map("created_at")
+  updatedAt           DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Text {
+  id       String    @id @default(uuid())
+  page     String
+  topic    String
+  language Language?
+  value    String?
+  type     TextType
+  order    Int
+  textId   String?   @map("text_id")
+  text     Text?     @relation("NestedTexts", fields: [textId], references: [id], onDelete: Cascade)
+  texts    Text[]    @relation("NestedTexts")
+
+  @@map("texts")
+}
+
+enum TextType {
+  HTML
+  TEXT
+  URL
+  IMG
+}
+
+model Page {
+  id       String    @id @default(uuid())
+  title    String?
+  key      String
+  language Language?
+  path     String?
+  order    Int
+  pageId   String?   @map("page_id")
+  page     Page?     @relation("NestedPages", fields: [pageId], references: [id], onDelete: Cascade)
+  pages    Page[]    @relation("NestedPages")
+
+  @@map("pages")
+}
+
+model Contact {
+  id    String @id @default(uuid())
+  icon  String
+  value String
+  order Int
+
+  @@map("contacts")
+}
+
+enum Language {
+  UA
+  EN
+  CN
+  TR
+  FR
+  SA
+  ES
+  uk
+  en
+  zh
+  tr
+  fr
+  ar
+  es
+}
+
+model Check {
+  id             String    @id @default(uuid())
+  fullName       String    @map("full_name")
+  contractNumber String    @map("contract_number")
+  createdAt      DateTime? @default(now()) @map("created_at")
+  updatedAt      DateTime? @default(now()) @updatedAt @map("updated_at")
+
+  @@map("checks")
+}
