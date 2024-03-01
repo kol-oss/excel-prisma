@@ -11,29 +11,27 @@ function getItemType(item: Naming) {
 
 const prisma = new PrismaClient();
 
-export class Repository {
-  static async write(data: Map<string, Naming[]>) {
-    let currentTopicId: string | null = null;
-    let order = 1;
+export default async function write(data: Map<string, Naming[]>) {
+  let currentTopicId: string | null = null;
+  let order = 1;
 
-    const values: Naming[] = Array.from(data.values()).flat();
+  const values: Naming[] = Array.from(data.values()).flat();
 
-    for (const item of values) {
-      if (!item.text) currentTopicId = null;
+  for (const item of values) {
+    if (!item.text) currentTopicId = null;
 
-      const page: Text = await prisma.text.create({
-        data: {
-          page: item.page,
-          topic: item.topic,
-          language: (item.language as Language) ?? 'uk',
-          value: item.value,
-          type: getItemType(item),
-          order: order++,
-          textId: currentTopicId,
-        },
-      });
+    const page: Text = await prisma.text.create({
+      data: {
+        page: item.page,
+        topic: item.topic,
+        language: (item.language as Language) ?? 'uk',
+        value: item.value,
+        type: getItemType(item),
+        order: order++,
+        textId: currentTopicId,
+      },
+    });
 
-      if (!item.text) currentTopicId = page.id;
-    }
+    if (!item.text) currentTopicId = page.id;
   }
 }
